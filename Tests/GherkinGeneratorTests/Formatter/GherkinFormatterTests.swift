@@ -26,7 +26,7 @@ struct GherkinFormatterTests {
         let output = formatter.format(feature)
 
         #expect(output.contains("Feature: Login"))
-        #expect(output.contains("Scenario: Successful login"))
+        #expect(output.contains("Example: Successful login"))
         #expect(output.contains("Given a valid account"))
         #expect(output.contains("When the user logs in"))
         #expect(output.contains("Then the dashboard is displayed"))

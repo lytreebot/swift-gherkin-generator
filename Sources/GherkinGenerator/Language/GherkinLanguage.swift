@@ -14,7 +14,7 @@
 /// - Note: The full set of 70+ languages will be loaded from the official
 ///   `gherkin-languages.json`. This enum provides the most commonly used
 ///   languages as static members with support for custom languages.
-public struct GherkinLanguage: Sendable, Hashable, Codable {
+public struct GherkinLanguage: Sendable, Codable {
     /// The ISO language code (e.g., `"en"`, `"fr"`, `"de"`).
     public let code: String
 
@@ -42,6 +42,28 @@ public struct GherkinLanguage: Sendable, Hashable, Codable {
     /// or falls back to English keywords if the code is not registered.
     public var keywords: LanguageKeywords {
         LanguageKeywords.keywords(for: code)
+    }
+}
+
+// MARK: - Registry Lookup
+
+extension GherkinLanguage {
+    /// All available languages loaded from the official `gherkin-languages.json`.
+    ///
+    /// Returns an array of all registered languages, sorted by language code.
+    /// Typically contains 70+ languages.
+    public static var all: [GherkinLanguage] {
+        Array(GherkinLanguageRegistry.shared.languages.values).sorted { $0.code < $1.code }
+    }
+
+    /// Creates a language by looking up the given code in the registry.
+    ///
+    /// Returns `nil` if the code is not found in the official language list.
+    ///
+    /// - Parameter code: The ISO language code (e.g., `"en"`, `"fr"`, `"ja"`).
+    public init?(code: String) {
+        guard let language = GherkinLanguageRegistry.shared.languages[code] else { return nil }
+        self = language
     }
 }
 
@@ -92,6 +114,20 @@ extension GherkinLanguage {
 
     /// Swedish.
     public static let swedish = GherkinLanguage(code: "sv", name: "Swedish", nativeName: "Svenska")
+}
+
+// MARK: - Equatable & Hashable (by code only)
+
+extension GherkinLanguage: Equatable {
+    public static func == (lhs: GherkinLanguage, rhs: GherkinLanguage) -> Bool {
+        lhs.code == rhs.code
+    }
+}
+
+extension GherkinLanguage: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(code)
+    }
 }
 
 extension GherkinLanguage: CustomStringConvertible {

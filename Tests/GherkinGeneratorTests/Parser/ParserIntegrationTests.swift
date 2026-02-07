@@ -113,7 +113,7 @@ struct GherkinParserIntegrationTests {
         let formatter = GherkinFormatter()
         let output = formatter.format(feature)
         #expect(output.contains("Feature: Login"))
-        #expect(output.contains("Scenario: Success"))
+        #expect(output.contains("Example: Success"))
         #expect(output.contains("Given a valid account"))
     }
 }

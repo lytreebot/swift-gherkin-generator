@@ -21,7 +21,8 @@ let package = Package(
     targets: [
         .target(
             name: "GherkinGenerator",
-            path: "Sources/GherkinGenerator"
+            path: "Sources/GherkinGenerator",
+            resources: [.process("Resources")]
         ),
         .testTarget(
             name: "GherkinGeneratorTests",

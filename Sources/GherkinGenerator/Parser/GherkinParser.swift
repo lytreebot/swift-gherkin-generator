@@ -88,13 +88,6 @@ private struct ParserCursor {
         currentLine.map { $0.text.trimmingCharacters(in: .whitespaces) }
     }
 
-    private static let knownLanguages: [String: GherkinLanguage] = [
-        "en": .english, "fr": .french, "de": .german, "es": .spanish,
-        "it": .italian, "pt": .portuguese, "ja": .japanese, "zh-CN": .chinese,
-        "ru": .russian, "ar": .arabic, "ko": .korean, "nl": .dutch,
-        "pl": .polish, "tr": .turkish, "sv": .swedish
-    ]
-
     mutating func detectLanguage() -> GherkinLanguage {
         let saved = position
         defer { position = saved }
@@ -102,7 +95,7 @@ private struct ParserCursor {
         for index in 0..<maxLines {
             let trimmed = lines[index].text.trimmingCharacters(in: .whitespaces)
             if let code = parseLanguageDirective(trimmed) {
-                return Self.knownLanguages[code]
+                return GherkinLanguage(code: code)
                     ?? GherkinLanguage(code: code, name: code, nativeName: code)
             }
         }

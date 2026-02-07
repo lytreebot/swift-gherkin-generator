@@ -9,7 +9,7 @@
 /// ```swift
 /// let kw = LanguageKeywords.keywords(for: "fr")
 /// print(kw.feature)    // ["Fonctionnalité"]
-/// print(kw.given)      // ["Soit", "Etant donné", "Etant donnée", ...]
+/// print(kw.given)      // ["Soit", "Sachant que", ...]
 /// print(kw.given[0])   // "Soit" (preferred for export)
 /// ```
 public struct LanguageKeywords: Sendable, Hashable {
@@ -79,37 +79,28 @@ public struct LanguageKeywords: Sendable, Hashable {
 extension LanguageKeywords {
     /// Returns the keywords for the given language code.
     ///
+    /// Loads keywords from the official `gherkin-languages.json` resource.
     /// Falls back to English keywords if the code is not registered.
     ///
     /// - Parameter code: The ISO language code (e.g., `"en"`, `"fr"`).
     /// - Returns: The keyword set for the language.
     public static func keywords(for code: String) -> LanguageKeywords {
-        builtInKeywords[code] ?? english
+        GherkinLanguageRegistry.shared.keywords[code] ?? fallbackEnglish
     }
 
-    /// All registered language codes.
+    /// All registered language codes (70+ languages).
     public static var registeredLanguages: [String] {
-        Array(builtInKeywords.keys.sorted())
+        Array(GherkinLanguageRegistry.shared.keywords.keys.sorted())
     }
 
-    // MARK: - Built-in Registry
+    /// English keywords loaded from the official JSON.
+    ///
+    /// Falls back to a hardcoded subset if the JSON resource is unavailable.
+    public static let english: LanguageKeywords =
+        GherkinLanguageRegistry.shared.keywords["en"] ?? fallbackEnglish
 
-    /// Built-in keyword definitions.
-    /// - Note: The full 70+ languages will be generated from `gherkin-languages.json`.
-    ///   This initial set covers the most common languages.
-    private static let builtInKeywords: [String: LanguageKeywords] = [
-        "en": english,
-        "fr": french,
-        "de": german,
-        "es": spanish
-    ]
-}
-
-// MARK: - Built-in Language Keywords
-
-extension LanguageKeywords {
-    /// English keywords (default).
-    public static let english = LanguageKeywords(
+    /// Hardcoded English keywords used only when the JSON resource cannot be loaded.
+    private static let fallbackEnglish = LanguageKeywords(
         feature: ["Feature"],
         rule: ["Rule"],
         background: ["Background"],
@@ -121,53 +112,5 @@ extension LanguageKeywords {
         then: ["Then "],
         and: ["And "],
         but: ["But "]
-    )
-
-    /// French keywords.
-    public static let french = LanguageKeywords(
-        feature: ["Fonctionnalité"],
-        rule: ["Règle"],
-        background: ["Contexte"],
-        scenario: ["Scénario"],
-        scenarioOutline: ["Plan du Scénario", "Plan du scénario"],
-        examples: ["Exemples"],
-        given: [
-            "Soit ", "Etant donné ", "Etant donnée ", "Etant donnés ", "Etant données ",
-            "Étant donné ", "Étant donnée ", "Étant donnés ", "Étant données "
-        ],
-        when: ["Quand ", "Lorsque ", "Lorsqu'"],
-        then: ["Alors "],
-        and: ["Et "],
-        but: ["Mais "]
-    )
-
-    /// German keywords.
-    public static let german = LanguageKeywords(
-        feature: ["Funktionalität", "Funktion"],
-        rule: ["Regel"],
-        background: ["Grundlage", "Hintergrund", "Voraussetzungen", "Vorbedingungen"],
-        scenario: ["Szenario"],
-        scenarioOutline: ["Szenarien", "Szenariovorlage"],
-        examples: ["Beispiele"],
-        given: ["Angenommen ", "Gegeben sei ", "Gegeben seien "],
-        when: ["Wenn "],
-        then: ["Dann "],
-        and: ["Und "],
-        but: ["Aber "]
-    )
-
-    /// Spanish keywords.
-    public static let spanish = LanguageKeywords(
-        feature: ["Característica", "Necesidad del negocio", "Requisito"],
-        rule: ["Regla"],
-        background: ["Antecedentes"],
-        scenario: ["Escenario", "Ejemplo"],
-        scenarioOutline: ["Esquema del escenario"],
-        examples: ["Ejemplos"],
-        given: ["Dado ", "Dada ", "Dados ", "Dadas "],
-        when: ["Cuando "],
-        then: ["Entonces "],
-        and: ["Y "],
-        but: ["Pero "]
     )
 }
