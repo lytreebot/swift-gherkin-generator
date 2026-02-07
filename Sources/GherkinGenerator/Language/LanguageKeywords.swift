@@ -101,7 +101,7 @@ extension LanguageKeywords {
         "en": english,
         "fr": french,
         "de": german,
-        "es": spanish,
+        "es": spanish
     ]
 }
 
@@ -131,7 +131,10 @@ extension LanguageKeywords {
         scenario: ["Scénario"],
         scenarioOutline: ["Plan du Scénario", "Plan du scénario"],
         examples: ["Exemples"],
-        given: ["Soit ", "Etant donné ", "Etant donnée ", "Etant donnés ", "Etant données ", "Étant donné ", "Étant donnée ", "Étant donnés ", "Étant données "],
+        given: [
+            "Soit ", "Etant donné ", "Etant donnée ", "Etant donnés ", "Etant données ",
+            "Étant donné ", "Étant donnée ", "Étant donnés ", "Étant données "
+        ],
         when: ["Quand ", "Lorsque ", "Lorsqu'"],
         then: ["Alors "],
         and: ["Et "],

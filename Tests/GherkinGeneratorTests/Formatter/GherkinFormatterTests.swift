@@ -1,4 +1,5 @@
 import Testing
+
 @testable import GherkinGenerator
 
 @Suite("GherkinFormatter")
@@ -9,14 +10,15 @@ struct GherkinFormatterTests {
         let feature = Feature(
             title: "Login",
             children: [
-                .scenario(Scenario(
-                    title: "Successful login",
-                    steps: [
-                        Step(keyword: .given, text: "a valid account"),
-                        Step(keyword: .when, text: "the user logs in"),
-                        Step(keyword: .then, text: "the dashboard is displayed"),
-                    ]
-                )),
+                .scenario(
+                    Scenario(
+                        title: "Successful login",
+                        steps: [
+                            Step(keyword: .given, text: "a valid account"),
+                            Step(keyword: .when, text: "the user logs in"),
+                            Step(keyword: .then, text: "the dashboard is displayed")
+                        ]
+                    ))
             ]
         )
 
@@ -36,14 +38,15 @@ struct GherkinFormatterTests {
             title: "Authentification",
             language: .french,
             children: [
-                .scenario(Scenario(
-                    title: "Connexion",
-                    steps: [
-                        Step(keyword: .given, text: "un compte valide"),
-                        Step(keyword: .when, text: "je me connecte"),
-                        Step(keyword: .then, text: "je suis connecté"),
-                    ]
-                )),
+                .scenario(
+                    Scenario(
+                        title: "Connexion",
+                        steps: [
+                            Step(keyword: .given, text: "un compte valide"),
+                            Step(keyword: .when, text: "je me connecte"),
+                            Step(keyword: .then, text: "je suis connecté")
+                        ]
+                    ))
             ]
         )
 
@@ -62,20 +65,21 @@ struct GherkinFormatterTests {
         let feature = Feature(
             title: "Pricing",
             children: [
-                .scenario(Scenario(
-                    title: "Prices",
-                    steps: [
-                        Step(
-                            keyword: .given,
-                            text: "the following prices",
-                            dataTable: DataTable(rows: [
-                                ["Quantity", "Price"],
-                                ["1-10", "10€"],
-                                ["11-50", "8€"],
-                            ])
-                        ),
-                    ]
-                )),
+                .scenario(
+                    Scenario(
+                        title: "Prices",
+                        steps: [
+                            Step(
+                                keyword: .given,
+                                text: "the following prices",
+                                dataTable: DataTable(rows: [
+                                    ["Quantity", "Price"],
+                                    ["1-10", "10€"],
+                                    ["11-50", "8€"]
+                                ])
+                            )
+                        ]
+                    ))
             ]
         )
 
@@ -94,14 +98,15 @@ struct GherkinFormatterTests {
             title: "Payment",
             tags: [Tag("payment"), Tag("critical")],
             children: [
-                .scenario(Scenario(
-                    title: "Credit card",
-                    tags: [Tag("card")],
-                    steps: [
-                        Step(keyword: .given, text: "a cart"),
-                        Step(keyword: .then, text: "payment done"),
-                    ]
-                )),
+                .scenario(
+                    Scenario(
+                        title: "Credit card",
+                        tags: [Tag("card")],
+                        steps: [
+                            Step(keyword: .given, text: "a cart"),
+                            Step(keyword: .then, text: "payment done")
+                        ]
+                    ))
             ]
         )
 

@@ -71,7 +71,7 @@ public struct GherkinValidator: Sendable {
         CoherenceRule(),
         TagFormatRule(),
         TableConsistencyRule(),
-        OutlinePlaceholderRule(),
+        OutlinePlaceholderRule()
     ]
 }
 
@@ -269,29 +269,41 @@ public struct TableConsistencyRule: ValidationRule, Sendable {
             tables.append(contentsOf: tablesFromSteps(background.steps))
         }
         for child in feature.children {
-            switch child {
+            tables.append(contentsOf: tablesFromFeatureChild(child))
+        }
+        return tables
+    }
+
+    private func tablesFromFeatureChild(_ child: FeatureChild) -> [DataTable] {
+        switch child {
+        case .scenario(let scenario):
+            return tablesFromSteps(scenario.steps)
+        case .outline(let outline):
+            return tablesFromOutline(outline)
+        case .rule(let rule):
+            return tablesFromRule(rule)
+        }
+    }
+
+    private func tablesFromOutline(_ outline: ScenarioOutline) -> [DataTable] {
+        var tables = tablesFromSteps(outline.steps)
+        for example in outline.examples {
+            tables.append(example.table)
+        }
+        return tables
+    }
+
+    private func tablesFromRule(_ rule: Rule) -> [DataTable] {
+        var tables: [DataTable] = []
+        if let background = rule.background {
+            tables.append(contentsOf: tablesFromSteps(background.steps))
+        }
+        for ruleChild in rule.children {
+            switch ruleChild {
             case .scenario(let scenario):
                 tables.append(contentsOf: tablesFromSteps(scenario.steps))
             case .outline(let outline):
-                tables.append(contentsOf: tablesFromSteps(outline.steps))
-                for example in outline.examples {
-                    tables.append(example.table)
-                }
-            case .rule(let rule):
-                if let background = rule.background {
-                    tables.append(contentsOf: tablesFromSteps(background.steps))
-                }
-                for ruleChild in rule.children {
-                    switch ruleChild {
-                    case .scenario(let scenario):
-                        tables.append(contentsOf: tablesFromSteps(scenario.steps))
-                    case .outline(let outline):
-                        tables.append(contentsOf: tablesFromSteps(outline.steps))
-                        for example in outline.examples {
-                            tables.append(example.table)
-                        }
-                    }
-                }
+                tables.append(contentsOf: tablesFromOutline(outline))
             }
         }
         return tables
@@ -309,10 +321,8 @@ public struct TableConsistencyRule: ValidationRule, Sendable {
             if row.count != expectedColumns {
                 errors.append(.inconsistentTableColumns(expected: expectedColumns, found: row.count, row: rowIndex))
             }
-            for (columnIndex, cell) in row.enumerated() {
-                if cell.isEmpty {
-                    errors.append(.emptyTableCell(row: rowIndex, column: columnIndex))
-                }
+            for (columnIndex, cell) in row.enumerated() where cell.isEmpty {
+                errors.append(.emptyTableCell(row: rowIndex, column: columnIndex))
             }
         }
         return errors
@@ -362,10 +372,8 @@ public struct OutlinePlaceholderRule: ValidationRule, Sendable {
         }
 
         var errors: [GherkinError] = []
-        for placeholder in placeholders.sorted() {
-            if !definedColumns.contains(placeholder) {
-                errors.append(.undefinedPlaceholder(placeholder: placeholder, scenario: outline.title))
-            }
+        for placeholder in placeholders.sorted() where !definedColumns.contains(placeholder) {
+            errors.append(.undefinedPlaceholder(placeholder: placeholder, scenario: outline.title))
         }
         return errors
     }

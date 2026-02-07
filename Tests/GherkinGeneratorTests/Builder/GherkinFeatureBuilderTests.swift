@@ -1,4 +1,5 @@
 import Testing
+
 @testable import GherkinGenerator
 
 @Suite("GherkinFeature Builder")
@@ -69,7 +70,7 @@ struct GherkinFeatureBuilderTests {
         let feature = try GherkinFeature(title: "Orders")
             .background {
                 $0.given("a logged-in user")
-                  .and("at least one existing order")
+                    .and("at least one existing order")
             }
             .addScenario("View orders")
             .when("I view my orders")
@@ -90,7 +91,7 @@ struct GherkinFeatureBuilderTests {
             .examples([
                 ["email", "valid"],
                 ["test@example.com", "true"],
-                ["invalid", "false"],
+                ["invalid", "false"]
             ])
             .build()
 
@@ -113,7 +114,7 @@ struct GherkinFeatureBuilderTests {
             .table([
                 ["Quantity", "Unit Price"],
                 ["1-10", "10€"],
-                ["11-50", "8€"],
+                ["11-50", "8€"]
             ])
             .when("I order 25 units")
             .then("the unit price is 8€")
@@ -177,7 +178,8 @@ struct GherkinFeatureBuilderTests {
         var builder = GherkinFeature(title: "API Smoke Tests")
 
         for endpoint in endpoints {
-            builder = builder
+            builder =
+                builder
                 .addScenario("GET /\(endpoint) returns 200")
                 .given("the API is running")
                 .when("I request GET /api/\(endpoint)")
@@ -196,7 +198,7 @@ struct GherkinFeatureBuilderTests {
                 title: "Test 1",
                 steps: [
                     Step(keyword: .given, text: "something"),
-                    Step(keyword: .then, text: "result"),
+                    Step(keyword: .then, text: "result")
                 ]
             )
         )

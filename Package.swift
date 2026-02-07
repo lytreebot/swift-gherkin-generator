@@ -10,13 +10,13 @@ let package = Package(
         .tvOS(.v17),
         .watchOS(.v10),
         .visionOS(.v1),
-        .macCatalyst(.v17),
+        .macCatalyst(.v17)
     ],
     products: [
         .library(
             name: "GherkinGenerator",
             targets: ["GherkinGenerator"]
-        ),
+        )
     ],
     targets: [
         .target(
@@ -27,6 +27,6 @@ let package = Package(
             name: "GherkinGeneratorTests",
             dependencies: ["GherkinGenerator"],
             path: "Tests/GherkinGeneratorTests"
-        ),
+        )
     ]
 )

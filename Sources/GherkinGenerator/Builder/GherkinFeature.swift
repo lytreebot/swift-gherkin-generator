@@ -427,19 +427,21 @@ public struct GherkinFeature: Sendable, Hashable {
 
         switch pending {
         case .scenario(let title, let tags, let description, let steps):
-            copy.children.append(.scenario(
-                Scenario(title: title, tags: tags, description: description, steps: steps)
-            ))
+            copy.children.append(
+                .scenario(
+                    Scenario(title: title, tags: tags, description: description, steps: steps)
+                ))
         case .outline(let title, let tags, let description, let steps, let examples):
-            copy.children.append(.outline(
-                ScenarioOutline(
-                    title: title,
-                    tags: tags,
-                    description: description,
-                    steps: steps,
-                    examples: examples
-                )
-            ))
+            copy.children.append(
+                .outline(
+                    ScenarioOutline(
+                        title: title,
+                        tags: tags,
+                        description: description,
+                        steps: steps,
+                        examples: examples
+                    )
+                ))
         }
 
         copy.pending = nil
@@ -522,7 +524,7 @@ extension GherkinFeature {
         func addingExamples(_ examples: Examples) -> PendingChild {
             switch self {
             case .scenario:
-                return self // No-op: examples on a regular scenario
+                return self  // No-op: examples on a regular scenario
             case .outline(let title, let tags, let desc, let steps, var existing):
                 existing.append(examples)
                 return .outline(

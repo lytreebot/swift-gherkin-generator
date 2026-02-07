@@ -1,4 +1,5 @@
 import Testing
+
 @testable import GherkinGenerator
 
 @Suite("Model Types")
@@ -33,7 +34,7 @@ struct ModelTests {
         let table = DataTable(rows: [
             ["name", "role"],
             ["Alice", "admin"],
-            ["Bob", "user"],
+            ["Bob", "user"]
         ])
 
         #expect(table.columnCount == 2)
