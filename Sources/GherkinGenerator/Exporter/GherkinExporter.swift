@@ -257,6 +257,21 @@ public struct GherkinExporter: Sendable {
     }
 }
 
+/// Progress information for a streaming export operation.
+public struct ExportProgress: Sendable {
+    /// The zero-based index of the child being processed.
+    public let childIndex: Int
+
+    /// The total number of children in the feature.
+    public let totalChildren: Int
+
+    /// A value between 0.0 and 1.0 indicating overall progress.
+    public var fractionCompleted: Double {
+        guard totalChildren > 0 else { return 1.0 }
+        return Double(childIndex + 1) / Double(totalChildren)
+    }
+}
+
 /// An actor for memory-efficient streaming export of large features.
 ///
 /// `StreamingExporter` writes features to disk line-by-line without
@@ -267,8 +282,14 @@ public struct GherkinExporter: Sendable {
 /// let exporter = StreamingExporter()
 /// try await exporter.export(largeFeature, to: "large.feature")
 /// ```
+///
+/// For consumers that want streaming access without file I/O, use
+/// ``lines(for:)`` to get an `AsyncStream<String>` of formatted lines.
+///
+/// For progress reporting, use ``exportWithProgress(_:to:)`` which
+/// returns an `AsyncStream<ExportProgress>`.
 public actor StreamingExporter {
-    /// The formatter configuration.
+    /// The formatter used for section-level formatting.
     private let formatter: GherkinFormatter
 
     /// Creates a streaming exporter.
@@ -280,17 +301,143 @@ public actor StreamingExporter {
 
     /// Exports a feature to a file using streaming I/O.
     ///
+    /// Writes section by section (header, background, each child)
+    /// without building the full output string in memory.
+    ///
     /// - Parameters:
     ///   - feature: The feature to export.
     ///   - path: The output file path.
     /// - Throws: ``GherkinError/exportFailed(path:reason:)`` on I/O errors.
     public func export(_ feature: Feature, to path: String) async throws {
-        // TODO: Implement streaming line-by-line export
-        let content = formatter.format(feature)
+        let fileManager = FileManager.default
+        fileManager.createFile(atPath: path, contents: nil)
+
+        guard let handle = FileHandle(forWritingAtPath: path) else {
+            throw GherkinError.exportFailed(path: path, reason: "Cannot open file for writing")
+        }
+        defer { handle.closeFile() }
+
         do {
-            try content.write(toFile: path, atomically: true, encoding: .utf8)
+            try writeSection(formatter.formatHeader(feature), to: handle)
+
+            if let background = feature.background {
+                let bgLines = formatter.formatBackgroundSection(background, language: feature.language)
+                try writeSection(bgLines, to: handle)
+            }
+
+            for child in feature.children {
+                let childLines = formatter.formatChild(child, language: feature.language)
+                try writeSection(childLines, to: handle)
+            }
+        } catch let error as GherkinError {
+            throw error
         } catch {
             throw GherkinError.exportFailed(path: path, reason: error.localizedDescription)
         }
+    }
+
+    /// Exports a feature to a file and returns a progress stream.
+    ///
+    /// The returned stream yields progress updates as each child
+    /// (scenario, outline, rule) is written. The export runs
+    /// concurrently; consume the stream to observe progress.
+    ///
+    /// - Parameters:
+    ///   - feature: The feature to export.
+    ///   - path: The output file path.
+    /// - Returns: An async stream of progress updates.
+    public func exportWithProgress(
+        _ feature: Feature,
+        to path: String
+    ) -> AsyncStream<ExportProgress> {
+        let formatter = self.formatter
+        return AsyncStream { continuation in
+            let fileManager = FileManager.default
+            fileManager.createFile(atPath: path, contents: nil)
+
+            guard let handle = FileHandle(forWritingAtPath: path) else {
+                continuation.finish()
+                return
+            }
+
+            do {
+                try Self.writeSection(formatter.formatHeader(feature), to: handle)
+
+                if let background = feature.background {
+                    let bgLines = formatter.formatBackgroundSection(
+                        background, language: feature.language
+                    )
+                    try Self.writeSection(bgLines, to: handle)
+                }
+
+                let totalChildren = feature.children.count
+                for (index, child) in feature.children.enumerated() {
+                    let childLines = formatter.formatChild(child, language: feature.language)
+                    try Self.writeSection(childLines, to: handle)
+                    continuation.yield(
+                        ExportProgress(childIndex: index, totalChildren: totalChildren)
+                    )
+                }
+            } catch {
+                // Progress stream cannot propagate errors; the file will be partial.
+            }
+
+            handle.closeFile()
+            continuation.finish()
+        }
+    }
+
+    /// Returns an `AsyncStream` of formatted lines for a feature.
+    ///
+    /// Lines are generated section by section without building
+    /// the full output in memory. Consumers can process each line
+    /// as it arrives.
+    ///
+    /// - Parameter feature: The feature to format.
+    /// - Returns: An async stream of individual output lines.
+    public func lines(for feature: Feature) -> AsyncStream<String> {
+        let formatter = self.formatter
+        return AsyncStream { continuation in
+            for line in formatter.formatHeader(feature) {
+                continuation.yield(line)
+            }
+
+            if let background = feature.background {
+                for line in formatter.formatBackgroundSection(
+                    background, language: feature.language
+                ) {
+                    continuation.yield(line)
+                }
+            }
+
+            for child in feature.children {
+                for line in formatter.formatChild(child, language: feature.language) {
+                    continuation.yield(line)
+                }
+            }
+
+            continuation.finish()
+        }
+    }
+
+    // MARK: - Private I/O Helpers
+
+    private func writeSection(_ lines: [String], to handle: FileHandle) throws {
+        try Self.writeSection(lines, to: handle)
+    }
+
+    private static func writeSection(_ lines: [String], to handle: FileHandle) throws {
+        for line in lines {
+            try writeLine(line, to: handle)
+        }
+    }
+
+    private func writeLine(_ line: String, to handle: FileHandle) throws {
+        try Self.writeLine(line, to: handle)
+    }
+
+    private static func writeLine(_ line: String, to handle: FileHandle) throws {
+        guard let data = (line + "\n").data(using: .utf8) else { return }
+        handle.write(data)
     }
 }

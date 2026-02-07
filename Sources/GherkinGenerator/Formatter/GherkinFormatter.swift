@@ -73,6 +73,52 @@ public struct GherkinFormatter: Sendable {
 
     // MARK: - Internal Formatting
 
+    // MARK: - Section Formatting (internal for StreamingExporter)
+
+    /// Formats the feature header lines (language, tags, title, description).
+    func formatHeader(_ feature: Feature) -> [String] {
+        var lines: [String] = []
+        if feature.language != .english {
+            lines.append("# language: \(feature.language.code)")
+            lines.append("")
+        }
+        if !feature.tags.isEmpty {
+            lines.append(feature.tags.map(\.rawValue).joined(separator: " "))
+        }
+        let featureKeyword = feature.language.keywords.feature[0]
+        lines.append("\(featureKeyword): \(feature.title)")
+        if let description = feature.description {
+            lines.append(indent(description, level: 1))
+            lines.append("")
+        }
+        return lines
+    }
+
+    /// Formats a background section.
+    func formatBackgroundSection(
+        _ background: Background, language: GherkinLanguage
+    ) -> [String] {
+        var lines = [""]
+        lines.append(contentsOf: formatBackground(background, language: language))
+        return lines
+    }
+
+    /// Formats a single feature child (scenario, outline, or rule).
+    func formatChild(
+        _ child: FeatureChild, language: GherkinLanguage
+    ) -> [String] {
+        var lines = [""]
+        switch child {
+        case .scenario(let scenario):
+            lines.append(contentsOf: formatScenario(scenario, language: language))
+        case .outline(let outline):
+            lines.append(contentsOf: formatOutline(outline, language: language))
+        case .rule(let rule):
+            lines.append(contentsOf: formatRule(rule, language: language))
+        }
+        return lines
+    }
+
     private func formatBackground(_ background: Background, language: GherkinLanguage) -> [String] {
         var lines: [String] = []
         let keyword = language.keywords.background[0]
