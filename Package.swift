@@ -26,8 +26,17 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.5.0")
     ],
     targets: [
+        .systemLibrary(
+            name: "CZlib",
+            path: "Sources/CZlib",
+            providers: [
+                .apt(["zlib1g-dev"]),
+                .brew(["zlib"])
+            ]
+        ),
         .target(
             name: "GherkinGenerator",
+            dependencies: ["CZlib"],
             path: "Sources/GherkinGenerator",
             resources: [.process("Resources")]
         ),
@@ -41,7 +50,7 @@ let package = Package(
         ),
         .testTarget(
             name: "GherkinGeneratorTests",
-            dependencies: ["GherkinGenerator"],
+            dependencies: ["GherkinGenerator", "CZlib"],
             path: "Tests/GherkinGeneratorTests",
             resources: [.process("Fixtures/Resources")]
         ),
