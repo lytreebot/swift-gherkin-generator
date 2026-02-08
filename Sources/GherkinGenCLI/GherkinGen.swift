@@ -12,6 +12,7 @@ struct GherkinGen: AsyncParsableCommand {
             ValidateCommand.self,
             ParseCommand.self,
             ExportCommand.self,
+            BatchExportCommand.self,
             ConvertCommand.self,
             LanguagesCommand.self
         ]
