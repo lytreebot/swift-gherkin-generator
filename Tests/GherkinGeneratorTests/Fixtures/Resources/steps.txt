@@ -1,0 +1,25 @@
+Inventory Management
+
+Check product availability
+Given a product "Wireless Mouse" in the warehouse
+And the current stock is 50 units
+When a customer orders 3 units
+Then the stock is reduced to 47 units
+And the order is confirmed
+
+---
+
+Restock notification
+Given a product "Keyboard" with stock below threshold
+And the threshold is 10 units
+When the stock reaches 8 units
+Then a restock notification is sent to the supplier
+But the product remains available for purchase
+
+---
+
+Bulk inventory update
+Given a CSV file with updated stock levels
+When I import the inventory file
+Then all product quantities are updated
+And a summary report is generated

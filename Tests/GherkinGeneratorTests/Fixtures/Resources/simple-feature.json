@@ -1,0 +1,47 @@
+{
+  "children" : [
+    {
+      "scenario" : {
+        "_0" : {
+          "steps" : [
+            {
+              "keyword" : "given",
+              "text" : "a registered user with email \"user@example.com\""
+            },
+            {
+              "keyword" : "when",
+              "text" : "the user logs in with a valid password"
+            },
+            {
+              "keyword" : "then",
+              "text" : "the user is redirected to the dashboard"
+            },
+            {
+              "keyword" : "and",
+              "text" : "a welcome message is displayed"
+            }
+          ],
+          "tags" : [
+
+          ],
+          "title" : "Successful login with valid credentials"
+        }
+      }
+    }
+  ],
+  "comments" : [
+
+  ],
+  "description" : "As a registered user\nI want to log in to the application\nSo that I can access my account",
+  "language" : {
+    "code" : "en",
+    "name" : "English",
+    "nativeName" : "English"
+  },
+  "tags" : [
+    {
+      "name" : "auth"
+    }
+  ],
+  "title" : "User Authentication"
+}

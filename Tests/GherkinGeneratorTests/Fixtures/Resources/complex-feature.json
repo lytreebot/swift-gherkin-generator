@@ -1,0 +1,152 @@
+{
+  "background" : {
+    "steps" : [
+      {
+        "keyword" : "given",
+        "text" : "a logged-in customer with email \"shopper@example.com\""
+      },
+      {
+        "keyword" : "and",
+        "text" : "the product catalog is loaded"
+      },
+      {
+        "keyword" : "and",
+        "text" : "the shopping cart is empty"
+      }
+    ]
+  },
+  "children" : [
+    {
+      "scenario" : {
+        "_0" : {
+          "steps" : [
+            {
+              "keyword" : "given",
+              "text" : "the product \"Wireless Headphones\" priced at 79.99 EUR"
+            },
+            {
+              "keyword" : "when",
+              "text" : "I add the product to my cart"
+            },
+            {
+              "keyword" : "then",
+              "text" : "the cart contains 1 item"
+            },
+            {
+              "keyword" : "and",
+              "text" : "the cart total is 79.99 EUR"
+            },
+            {
+              "keyword" : "but",
+              "text" : "no discount is applied"
+            }
+          ],
+          "tags" : [
+            {
+              "name" : "happy-path"
+            }
+          ],
+          "title" : "Add a single product to the cart"
+        }
+      }
+    },
+    {
+      "scenario" : {
+        "_0" : {
+          "steps" : [
+            {
+              "dataTable" : {
+                "rows" : [
+                  [
+                    "product",
+                    "quantity",
+                    "price"
+                  ],
+                  [
+                    "Wireless Headphones",
+                    "1",
+                    "79.99"
+                  ],
+                  [
+                    "USB-C Cable",
+                    "2",
+                    "12.50"
+                  ]
+                ]
+              },
+              "keyword" : "given",
+              "text" : "I have the following items in my cart:"
+            },
+            {
+              "keyword" : "when",
+              "text" : "I remove \"USB-C Cable\" from my cart"
+            },
+            {
+              "keyword" : "then",
+              "text" : "the cart contains 1 item"
+            },
+            {
+              "keyword" : "and",
+              "text" : "the cart total is 79.99 EUR"
+            }
+          ],
+          "tags" : [
+
+          ],
+          "title" : "Remove a product from the cart"
+        }
+      }
+    },
+    {
+      "scenario" : {
+        "_0" : {
+          "steps" : [
+            {
+              "keyword" : "given",
+              "text" : "I have added \"Wireless Headphones\" to my cart"
+            },
+            {
+              "keyword" : "when",
+              "text" : "I request the cart contents via the API"
+            },
+            {
+              "docString" : {
+                "content" : "{\n  \"items\": [\n    {\n      \"name\": \"Wireless Headphones\",\n      \"quantity\": 1,\n      \"price\": 79.99\n    }\n  ],\n  \"total\": 79.99\n}",
+                "mediaType" : "application\/json"
+              },
+              "keyword" : "then",
+              "text" : "the response body is:"
+            }
+          ],
+          "tags" : [
+            {
+              "name" : "api"
+            }
+          ],
+          "title" : "Verify cart contents via API"
+        }
+      }
+    }
+  ],
+  "comments" : [
+
+  ],
+  "description" : "As an online shopper\nI want to manage items in my shopping cart\nSo that I can purchase the products I need",
+  "language" : {
+    "code" : "en",
+    "name" : "English",
+    "nativeName" : "English"
+  },
+  "tags" : [
+    {
+      "name" : "e2e"
+    },
+    {
+      "name" : "smoke"
+    },
+    {
+      "name" : "cart"
+    }
+  ],
+  "title" : "Shopping Cart Management"
+}

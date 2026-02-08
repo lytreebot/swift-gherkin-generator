@@ -1,0 +1,7 @@
+Scenario,Given,When,Then,Tags
+User login,a registered user "alice@example.com",the user submits valid credentials,the user is redirected to the dashboard,auth smoke
+Failed login,a registered user "alice@example.com",the user submits an incorrect password,an error message "Invalid credentials" is displayed,auth negative
+Password reset,a user who forgot their password,they request a password reset,a reset link is sent to their email,auth
+Account lockout,a user with 3 failed login attempts,the user fails to log in again,the account is locked for 30 minutes,auth security
+New registration,a visitor on the signup page,they submit valid registration details,a new account is created,auth signup
+Email verification,a newly registered user,they click the verification link,the account is marked as verified,auth

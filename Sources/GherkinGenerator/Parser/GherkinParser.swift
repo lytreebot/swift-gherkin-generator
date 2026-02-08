@@ -432,9 +432,12 @@ extension ParserCursor {
     // MARK: Doc String
 
     private mutating func parseDocString() -> DocString {
-        guard let openingLine = peekTrimmed() else { return DocString(content: "") }
+        guard let rawOpening = currentLine?.text else { return DocString(content: "") }
+        let openingLine = rawOpening.trimmingCharacters(in: .whitespaces)
+        guard openingLine.hasPrefix("\"\"\"") else { return DocString(content: "") }
         let afterQuotes = openingLine.dropFirst(3).trimmingCharacters(in: .whitespaces)
         let mediaType: String? = afterQuotes.isEmpty ? nil : afterQuotes
+        let indentCount = rawOpening.prefix(while: { $0 == " " || $0 == "\t" }).count
         advance()
         var contentLines: [String] = []
         while !isAtEnd {
@@ -444,10 +447,22 @@ extension ParserCursor {
                 advance()
                 break
             }
-            contentLines.append(line.text)
+            contentLines.append(stripIndent(line.text, count: indentCount))
             advance()
         }
         return DocString(content: contentLines.joined(separator: "\n"), mediaType: mediaType)
+    }
+
+    private func stripIndent(_ line: String, count: Int) -> String {
+        var stripped = 0
+        var index = line.startIndex
+        while stripped < count, index < line.endIndex {
+            let char = line[index]
+            guard char == " " || char == "\t" else { break }
+            stripped += 1
+            index = line.index(after: index)
+        }
+        return String(line[index...])
     }
 
     // MARK: Description

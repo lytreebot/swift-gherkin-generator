@@ -24,10 +24,11 @@ let package = Package(
             path: "Sources/GherkinGenerator",
             resources: [.process("Resources")]
         ),
-        .testTarget(
+.testTarget(
             name: "GherkinGeneratorTests",
             dependencies: ["GherkinGenerator"],
-            path: "Tests/GherkinGeneratorTests"
+            path: "Tests/GherkinGeneratorTests",
+            resources: [.process("Fixtures/Resources")]
         )
     ]
 )

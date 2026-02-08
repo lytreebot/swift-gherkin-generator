@@ -152,10 +152,11 @@ public struct GherkinFormatter: Sendable {
             lines.append("")
             let exKeyword = language.keywords.examples[0]
             let name = example.name.map { ": \($0)" } ?? ""
+            let suffix = example.name == nil ? ":" : ""
             if !example.tags.isEmpty {
                 lines.append(indent(example.tags.map(\.rawValue).joined(separator: " "), level: 2))
             }
-            lines.append(indent("\(exKeyword)\(name):", level: 2))
+            lines.append(indent("\(exKeyword)\(name)\(suffix)", level: 2))
             lines.append(contentsOf: formatDataTable(example.table, level: 3))
         }
 
@@ -224,11 +225,12 @@ public struct GherkinFormatter: Sendable {
             lines.append("")
             let exKeyword = language.keywords.examples[0]
             let name = example.name.map { ": \($0)" } ?? ""
+            let suffix = example.name == nil ? ":" : ""
             if !example.tags.isEmpty {
                 lines.append(
                     indent(example.tags.map(\.rawValue).joined(separator: " "), level: 3))
             }
-            lines.append(indent("\(exKeyword)\(name):", level: 3))
+            lines.append(indent("\(exKeyword)\(name)\(suffix)", level: 3))
             lines.append(contentsOf: formatDataTable(example.table, level: 4))
         }
 

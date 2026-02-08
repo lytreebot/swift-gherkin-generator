@@ -1,0 +1,5 @@
+Scenario;Given;When;Then;Tags
+Ajouter un produit;un catalogue avec des produits;je clique sur "Ajouter au panier";le produit est ajouté au panier;cart smoke
+Supprimer un produit;un panier avec 2 articles;je supprime un article;le panier contient 1 article;cart
+Vider le panier;un panier avec des articles;je clique sur "Vider le panier";le panier est vide;cart negative
+Appliquer un code promo;un panier avec un total de 100€;je saisis le code "PROMO20";une réduction de 20% est appliquée;cart promo
