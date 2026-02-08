@@ -1,56 +1,42 @@
-<!-- Logo placeholder -->
-<!-- <p align="center"><img src="Assets/logo.png" width="200" alt="GherkinGenerator logo"></p> -->
+# swift-gherkin-generator
 
-<h1 align="center">GherkinGenerator</h1>
+A Swift library for composing, validating, importing, and exporting Gherkin `.feature` files programmatically.
 
-<p align="center">
-  <strong>Compose, validate, import, and export Gherkin <code>.feature</code> files in Swift.</strong>
-</p>
+[![CI](https://github.com/atelier-socle/swift-gherkin-generator/actions/workflows/ci.yml/badge.svg)](https://github.com/atelier-socle/swift-gherkin-generator/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/atelier-socle/swift-gherkin-generator/graph/badge.svg)](https://codecov.io/github/atelier-socle/swift-gherkin-generator)
+[![Swift 6.2](https://img.shields.io/badge/Swift-6.2-orange.svg)](https://swift.org)
+[![Platforms](https://img.shields.io/badge/Platforms-macOS%20|%20iOS%20|%20tvOS%20|%20watchOS%20|%20visionOS%20|%20Linux-blue.svg)]()
 
-<!-- Badges placeholder -->
-<!-- [![Swift 6.2+](https://img.shields.io/badge/Swift-6.2%2B-orange)](https://swift.org) -->
-<!-- [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) -->
-<!-- [![CI](https://github.com/atelier-socle/swift-gherkin-generator/actions/workflows/ci.yml/badge.svg)](https://github.com/atelier-socle/swift-gherkin-generator/actions) -->
-<!-- [![codecov](https://codecov.io/gh/atelier-socle/swift-gherkin-generator/branch/main/graph/badge.svg)](https://codecov.io/gh/atelier-socle/swift-gherkin-generator) -->
+![swift-gherkin-generator](./assets/banner.png)
 
 ## Overview
 
-GherkinGenerator is a Swift library that replaces manual Gherkin authoring with a type-safe, fluent API. Build features programmatically, validate them against 5 built-in rules, import from CSV/JSON/plain text, and export to `.feature`, JSON, or Markdown -- with full multi-language support for 70+ languages.
+swift-gherkin-generator replaces manual Gherkin authoring with a type-safe, fluent Swift API. Build features programmatically, validate them against 5 built-in rules, import from CSV/JSON/plain text, and export to `.feature`, JSON, or Markdown. Full multi-language support for 70+ languages from the official Gherkin specification.
 
-Part of the [Atelier Socle](https://www.atelier-socle.com) Gherkin ecosystem alongside **GherkinTesting** (execute `.feature` files as Swift Testing tests).
+Part of the [Atelier Socle](https://www.atelier-socle.com) Gherkin ecosystem alongside [swift-gherkin-testing](https://github.com/atelier-socle/swift-gherkin-testing) (execute `.feature` files as Swift Testing tests).
 
 ## Features
 
-- **Fluent Builder API** -- chainable, immutable, `Sendable`-safe construction of features, scenarios, outlines, backgrounds, rules, data tables, and doc strings
-- **Validation Engine** -- 5 built-in rules (structure, coherence, tag format, table consistency, outline placeholders) plus custom rules via the `ValidationRule` protocol
-- **Multi-format Export** -- `.feature`, JSON (`Codable`), and Markdown
-- **Multi-format Import** -- `.feature` (recursive descent parser), CSV, JSON, and plain text
-- **70+ Languages** -- localized keywords from the official `gherkin-languages.json` with language detection
-- **Streaming & Batch** -- `AsyncStream`-based streaming export and batch import/validation via actors
-- **Swift 6.2 Strict Concurrency** -- all types are `Sendable`, actors for shared state, `async/await` throughout
-
-## Requirements
-
-| Platform | Minimum Version |
-|----------|----------------|
-| Swift | 6.2+ |
-| macOS | 14+ |
-| iOS | 17+ |
-| tvOS | 17+ |
-| watchOS | 10+ |
-| visionOS | 1+ |
-| Mac Catalyst | 17+ |
-| Linux | Supported |
+- **Fluent Builder** — chainable, immutable, `Sendable`-safe construction of features, scenarios, outlines, backgrounds, rules, data tables, and doc strings
+- **Validation Engine** — 5 built-in rules (structure, coherence, tag format, table consistency, outline placeholders) plus custom rules via the `ValidationRule` protocol
+- **Multi-format Export** — `.feature`, JSON (`Codable`), and Markdown
+- **Multi-format Import** — `.feature` (recursive descent parser), CSV, JSON, and plain text
+- **70+ languages** — localized keywords from the official `gherkin-languages.json` with automatic language detection
+- **Streaming & Batch** — `AsyncStream`-based streaming export and batch import/validation via actors
+- **Strict concurrency** — all public types are `Sendable`, actors for shared state, `async/await` throughout
 
 ## Installation
 
-### Swift Package Manager
+### Requirements
 
-Add GherkinGenerator to your `Package.swift`:
+- **Swift 6.2+** with strict concurrency
+- **Platforms**: iOS 17+ · macOS 14+ · tvOS 17+ · watchOS 10+ · visionOS 1+ · Mac Catalyst 17+ · Linux
+
+Add the package to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/atelier-socle/swift-gherkin-generator", from: "0.1.0")
+    .package(url: "https://github.com/atelier-socle/swift-gherkin-generator.git", from: "0.1.0")
 ]
 ```
 
@@ -65,10 +51,11 @@ Then add the dependency to your target:
 
 ## Quick Start
 
+Build a feature with the fluent API and produce an immutable `Feature` value:
+
 ```swift
 import GherkinGenerator
 
-// Build a feature with the fluent API
 let feature = try GherkinFeature(title: "Login")
     .addScenario("Successful login")
     .given("a valid account")
@@ -77,30 +64,28 @@ let feature = try GherkinFeature(title: "Login")
     .build()
 ```
 
-> Source: `Tests/GherkinGeneratorTests/Builder/GherkinFeatureBuilderTests.swift` -- `simpleScenario()`
+The `GherkinFeature` builder is immutable — every method returns a new copy. Call `.build()` to finalize the feature, `.validate()` to check for structural errors, or `.export(to:)` to write it directly to a `.feature` file.
 
-## API Reference
+## Key Concepts
 
-### Builder
+### Scenarios with Continuations
 
-The `GherkinFeature` builder provides a chainable, immutable API. Every method returns a new copy.
-
-#### Scenario with Continuations
+Chain `And` and `But` steps after any primary step to add continuation clauses:
 
 ```swift
 let feature = try GherkinFeature(title: "Cart")
     .addScenario("Add product")
     .given("an empty cart")
-    .when("I add a product at 29\u{20AC}")
+    .when("I add a product at 29€")
     .then("the cart contains 1 item")
-    .and("the total is 29\u{20AC}")
+    .and("the total is 29€")
     .but("no discount is applied")
     .build()
 ```
 
-> Source: `Tests/GherkinGeneratorTests/Builder/GherkinFeatureBuilderTests.swift` -- `scenarioWithContinuations()`
+### Background
 
-#### Background
+Define shared preconditions that run before every scenario in the feature. The closure receives a `BackgroundBuilder`:
 
 ```swift
 let feature = try GherkinFeature(title: "Orders")
@@ -114,9 +99,9 @@ let feature = try GherkinFeature(title: "Orders")
     .build()
 ```
 
-> Source: `Tests/GherkinGeneratorTests/Builder/GherkinFeatureBuilderTests.swift` -- `backgroundClosure()`
+### Scenario Outline with Examples
 
-#### Scenario Outline with Examples
+Use `addOutline` for parameterized scenarios. Placeholders in angle brackets (`<email>`) are substituted from the examples table at generation time:
 
 ```swift
 let feature = try GherkinFeature(title: "Email Validation")
@@ -132,9 +117,11 @@ let feature = try GherkinFeature(title: "Email Validation")
     .build()
 ```
 
-> Source: `Tests/GherkinGeneratorTests/Builder/GherkinFeatureBuilderTests.swift` -- `scenarioOutline()`
+Named and tagged examples blocks are also supported via `.examples(_:name:tags:)`.
 
-#### Data Table
+### Data Tables
+
+Attach a data table to any step. The first row is the header row:
 
 ```swift
 let feature = try GherkinFeature(title: "Pricing")
@@ -142,17 +129,17 @@ let feature = try GherkinFeature(title: "Pricing")
     .given("the following prices")
     .table([
         ["Quantity", "Unit Price"],
-        ["1-10", "10\u{20AC}"],
-        ["11-50", "8\u{20AC}"]
+        ["1-10", "10€"],
+        ["11-50", "8€"]
     ])
     .when("I order 25 units")
-    .then("the unit price is 8\u{20AC}")
+    .then("the unit price is 8€")
     .build()
 ```
 
-> Source: `Tests/GherkinGeneratorTests/Builder/GherkinFeatureBuilderTests.swift` -- `dataTable()`
+### Doc Strings
 
-#### Doc String
+Attach multi-line text with an optional media type to a step:
 
 ```swift
 let feature = try GherkinFeature(title: "API")
@@ -163,9 +150,9 @@ let feature = try GherkinFeature(title: "API")
     .build()
 ```
 
-> Source: `Tests/GherkinGeneratorTests/Builder/BuilderCoverageTests.swift` -- `docStringOnStep()`
+### Tags
 
-#### Tags
+Apply tags at feature level with `.tags()` and at scenario level with `.scenarioTags()`. Tags are used for filtering, categorization, and hook targeting:
 
 ```swift
 let feature = try GherkinFeature(title: "Payment")
@@ -177,9 +164,9 @@ let feature = try GherkinFeature(title: "Payment")
     .build()
 ```
 
-> Source: `Tests/GherkinGeneratorTests/Builder/GherkinFeatureBuilderTests.swift` -- `tags()`
+### Mass Generation
 
-#### Mass Generation
+Use `var` and reassignment for loop-based generation of many scenarios:
 
 ```swift
 let endpoints = ["users", "products", "orders"]
@@ -197,9 +184,11 @@ for endpoint in endpoints {
 let feature = try builder.build()
 ```
 
-> Source: `Tests/GherkinGeneratorTests/Builder/GherkinFeatureBuilderTests.swift` -- `massGeneration()`
+For a mutating approach, use `appendScenario(_:)` or `appendOutline(_:)` instead.
 
-#### Validate and Export
+### Validate and Export
+
+Combine building, validation, and file export in a single call:
 
 ```swift
 let builder = GherkinFeature(title: "Export Test")
@@ -210,20 +199,22 @@ let builder = GherkinFeature(title: "Export Test")
 try await builder.export(to: "output.feature")
 ```
 
-> Source: `Tests/GherkinGeneratorTests/Builder/BuilderCoverageTests.swift` -- `exportWritesFile()`
+This calls `.build()`, runs the validator, and writes the formatted output to disk.
 
-### Parser
+## Parsing
 
-#### Parse `.feature` Files
+### Parse `.feature` Files
+
+`GherkinParser` uses a recursive descent approach. It automatically detects the language from a `# language:` header or falls back to English:
 
 ```swift
 let parser = GherkinParser()
 let feature = try parser.parse(contentsOfFile: "login.feature")
 ```
 
-> Source: `Sources/GherkinGenerator/Parser/GherkinParser.swift` -- doc comment
+### Parse Gherkin Strings
 
-#### Parse Gherkin Strings
+Parse Gherkin source directly from a string:
 
 ```swift
 let parser = GherkinParser()
@@ -237,21 +228,21 @@ let feature = try parser.parse("""
     """)
 ```
 
-> Source: `Sources/GherkinGenerator/Parser/GherkinParser.swift` -- `parse(_:)`
+### Language Detection
 
-#### Language Detection
+Detect the language of a Gherkin source without parsing it:
 
 ```swift
 let parser = GherkinParser()
-let language = parser.detectLanguage(in: "# language: fr\nFonctionnalit\u{00E9}: ...")
+let language = parser.detectLanguage(in: "# language: fr\nFonctionnalité: ...")
 // language == .french
 ```
 
-> Source: `Sources/GherkinGenerator/Parser/GherkinParser.swift` -- `detectLanguage(in:)`
+## Importers
 
-### Importers
+### CSV
 
-#### CSV Import
+Map CSV columns to Gherkin step types via `CSVImportConfiguration`. Each row becomes a scenario:
 
 ```swift
 let csv = """
@@ -267,18 +258,22 @@ let config = CSVImportConfiguration(
 let feature = try CSVParser(configuration: config).parse(csv, featureTitle: "Auth")
 ```
 
-> Source: `Sources/GherkinGenerator/Parser/CSVParser.swift` -- doc comment
+Custom delimiters and an optional tag column are supported.
 
-#### JSON Import
+### JSON
+
+`JSONFeatureParser` decodes JSON produced by `GherkinExporter`, providing a round-trip guarantee — exporting to JSON and importing back produces an identical `Feature`:
 
 ```swift
 let parser = JSONFeatureParser()
 let feature = try parser.parse(jsonString)
 ```
 
-> Source: `Sources/GherkinGenerator/Parser/JSONFeatureParser.swift` -- doc comment
+Also supports `parse(data:)` for raw `Data` and `parse(contentsOfFile:)` for file paths.
 
-#### Plain Text Import
+### Plain Text
+
+Parse informal plain text into scenarios. Lines starting with `Given`/`When`/`Then` become steps, `---` separates scenarios, and the first line is the feature title:
 
 ```swift
 let text = """
@@ -296,9 +291,11 @@ let text = """
 let feature = try PlainTextParser().parse(text)
 ```
 
-> Source: `Sources/GherkinGenerator/Parser/PlainTextParser.swift` -- doc comment
+All prefixes and the separator are configurable via `PlainTextImportConfiguration`.
 
-#### Batch Import
+### Batch Import
+
+`BatchImporter` is an actor that scans a directory for `.feature` files and parses them in parallel using `TaskGroup`:
 
 ```swift
 let importer = BatchImporter()
@@ -313,11 +310,13 @@ for result in results {
 }
 ```
 
-> Source: `Sources/GherkinGenerator/Parser/BatchImporter.swift` -- doc comment
+Use `streamDirectory(at:)` for progressive processing via `AsyncStream`.
 
-### Validator
+## Validation
 
-#### Validate a Feature
+### Validate a Feature
+
+`GherkinValidator` checks a feature for structural correctness, coherence, and convention compliance. It reports all issues found, not just the first:
 
 ```swift
 let validator = GherkinValidator()
@@ -327,9 +326,9 @@ if errors.isEmpty {
 }
 ```
 
-> Source: `Sources/GherkinGenerator/Validator/GherkinValidator.swift` -- doc comment
+Use `validate(_:)` to throw on the first error instead.
 
-#### Built-in Rules
+### Built-in Rules
 
 | Rule | Description |
 |------|-------------|
@@ -339,7 +338,9 @@ if errors.isEmpty {
 | `TableConsistencyRule` | All rows must have the same column count, no empty cells |
 | `OutlinePlaceholderRule` | Every `<placeholder>` must match an Examples column header |
 
-#### Custom Rules
+### Custom Rules
+
+Conform to the `ValidationRule` protocol to add project-specific checks. Rules are composable — pass any combination to the validator:
 
 ```swift
 struct MaxScenariosRule: ValidationRule {
@@ -360,44 +361,46 @@ let validator = GherkinValidator(rules: [
 ])
 ```
 
-> Source: `Sources/GherkinGenerator/Validator/ValidationRule.swift` and `Sources/GherkinGenerator/Validator/GherkinValidator.swift` -- doc comments
+### Batch Validation
 
-#### Batch Validation
+`BatchValidator` is an actor that parses and validates all `.feature` files in a directory in parallel:
 
 ```swift
 let validator = BatchValidator()
 let results = try await validator.validateDirectory(at: "features/")
 for result in results {
     if result.isSuccess {
-        print("\u{2713} \(result.featureTitle ?? result.path)")
+        print("✓ \(result.featureTitle ?? result.path)")
     } else {
-        print("\u{2717} \(result.path): \(result.errors)")
+        print("✗ \(result.path): \(result.errors)")
     }
 }
 ```
 
-> Source: `Sources/GherkinGenerator/Validator/BatchValidator.swift` -- doc comment
+Use `streamValidation(at:)` for progressive reporting via `AsyncStream`.
 
-### Formatter
+## Formatting
+
+`GherkinFormatter` converts a `Feature` into a properly formatted Gherkin string with consistent indentation and pipe-aligned tables:
 
 ```swift
 let formatter = GherkinFormatter(configuration: .default)
 let output = formatter.format(feature)
 ```
 
-> Source: `Sources/GherkinGenerator/Formatter/GherkinFormatter.swift` -- doc comment
-
-#### Configuration Presets
+Three presets are available:
 
 | Preset | Description |
 |--------|-------------|
-| `.default` | 2-space indent, non-compact |
+| `.default` | 2-space indent, standard spacing |
 | `.compact` | Minimal whitespace |
 | `.tabs` | Tab-based indentation (1 tab per level) |
 
-### Exporter
+## Exporting
 
-#### Export to File
+### Export to File
+
+`GherkinExporter` writes a feature to disk in the chosen format:
 
 ```swift
 let exporter = GherkinExporter()
@@ -406,9 +409,9 @@ try await exporter.export(feature, to: "output.json", format: .json)
 try await exporter.export(feature, to: "output.md", format: .markdown)
 ```
 
-> Source: `Sources/GherkinGenerator/Exporter/GherkinExporter.swift` -- `export(_:to:format:)`
+### Render to String
 
-#### Render to String
+Render in-memory without writing to disk:
 
 ```swift
 let exporter = GherkinExporter()
@@ -417,20 +420,16 @@ let json = try exporter.render(feature, format: .json)
 let markdown = try exporter.render(feature, format: .markdown)
 ```
 
-> Source: `Sources/GherkinGenerator/Exporter/GherkinExporter.swift` -- `render(_:format:)`
+### Streaming Export
 
-### Streaming
-
-The `StreamingExporter` actor writes features line-by-line without loading the entire output in memory.
+`StreamingExporter` is an actor that writes features line-by-line without loading the entire output in memory, suitable for features with hundreds of scenarios:
 
 ```swift
 let exporter = StreamingExporter()
 try await exporter.export(largeFeature, to: "large.feature")
 ```
 
-> Source: `Sources/GherkinGenerator/Exporter/GherkinExporter.swift` -- `StreamingExporter` doc comment
-
-#### Line-by-Line Stream
+Get an `AsyncStream<String>` of formatted lines for custom processing:
 
 ```swift
 let exporter = StreamingExporter()
@@ -439,9 +438,7 @@ for await line in exporter.lines(for: feature) {
 }
 ```
 
-> Source: `Sources/GherkinGenerator/Exporter/GherkinExporter.swift` -- `lines(for:)`
-
-#### Progress Reporting
+Track progress as each child (scenario, outline, rule) is written:
 
 ```swift
 let exporter = StreamingExporter()
@@ -450,46 +447,35 @@ for await progress in await exporter.exportWithProgress(feature, to: path) {
 }
 ```
 
-> Source: `Sources/GherkinGenerator/Exporter/GherkinExporter.swift` -- `exportWithProgress(_:to:)`
+## i18n
 
-### Languages
-
-GherkinGenerator supports 70+ languages from the official Gherkin specification.
+Write features in 70+ languages. The parser detects `# language:` directives and uses localized keywords. The formatter produces output with the correct localized keywords:
 
 ```swift
-// Use a built-in language shortcut
 let feature = try GherkinFeature(title: "Authentification", language: .french)
     .addScenario("Connexion")
     .given("un compte valide")
     .when("je me connecte")
-    .then("je suis connect\u{00E9}")
+    .then("je suis connecté")
     .build()
 ```
 
-> Source: `Tests/GherkinGeneratorTests/Builder/GherkinFeatureBuilderTests.swift` -- `multiLanguage()`
+15 common languages have static shortcuts: `.english`, `.french`, `.german`, `.spanish`, `.italian`, `.portuguese`, `.japanese`, `.chinese`, `.russian`, `.arabic`, `.korean`, `.dutch`, `.polish`, `.turkish`, `.swedish`.
 
-#### Available Shortcuts
-
-`.english`, `.french`, `.german`, `.spanish`, `.italian`, `.portuguese`, `.japanese`, `.chinese`, `.russian`, `.arabic`, `.korean`, `.dutch`, `.polish`, `.turkish`, `.swedish`
-
-#### Lookup by Code
+Look up any language by ISO code or list all available languages:
 
 ```swift
 let language = GherkinLanguage(code: "ja") // Japanese
 let allLanguages = GherkinLanguage.all     // 70+ languages
 ```
 
-> Source: `Sources/GherkinGenerator/Language/GherkinLanguage.swift` -- `init?(code:)` and `all`
-
-#### Accessing Keywords
+Access localized keywords for a language:
 
 ```swift
 let lang = GherkinLanguage.french
-print(lang.keywords.feature) // ["Fonctionnalit\u{00E9}"]
-print(lang.keywords.given)   // ["Soit ", "Etant donn\u{00E9} ", ...]
+print(lang.keywords.feature) // ["Fonctionnalité"]
+print(lang.keywords.given)   // ["Soit ", "Etant donné ", ...]
 ```
-
-> Source: `Sources/GherkinGenerator/Language/GherkinLanguage.swift` -- doc comment
 
 ## Architecture
 
@@ -504,10 +490,16 @@ Sources/GherkinGenerator/
     Language/     # GherkinLanguage, LanguageKeywords, GherkinLanguageRegistry
 ```
 
+## Documentation
+
+Full documentation will be available in the DocC catalog (coming soon).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute.
+
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
 
-## Contact
-
-[Atelier Socle](https://www.atelier-socle.com/en/contact)
+Copyright (c) 2026 Atelier Socle SAS
