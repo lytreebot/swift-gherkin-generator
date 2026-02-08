@@ -3,7 +3,7 @@
 A Swift library for composing, validating, importing, and exporting Gherkin `.feature` files programmatically.
 
 [![CI](https://github.com/atelier-socle/swift-gherkin-generator/actions/workflows/ci.yml/badge.svg)](https://github.com/atelier-socle/swift-gherkin-generator/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/github/atelier-socle/swift-gherkin-generator/graph/badge.svg)](https://codecov.io/github/atelier-socle/swift-gherkin-generator)
+[![codecov](https://codecov.io/github/atelier-socle/swift-gherkin-generator/graph/badge.svg?token=3V6JR0WJ5E)](https://codecov.io/github/atelier-socle/swift-gherkin-generator)
 [![Swift 6.2](https://img.shields.io/badge/Swift-6.2-orange.svg)](https://swift.org)
 [![Platforms](https://img.shields.io/badge/Platforms-macOS%20|%20iOS%20|%20tvOS%20|%20watchOS%20|%20visionOS%20|%20Linux-blue.svg)]()
 
