@@ -170,6 +170,10 @@ Sources/GherkinGenerator/
 
 Please report bugs and feature requests via [GitHub Issues](https://github.com/atelier-socle/swift-gherkin-generator/issues).
 
+## License
+
+By contributing to this project, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
+
 ## Contact
 
 [Atelier Socle](https://www.atelier-socle.com/en/contact)
